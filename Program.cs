@@ -23,7 +23,6 @@ app.MapWhen((context) =>
         {
             await context.Response.WriteAsync("Tests \n");
             await next(context);
-            return;
         });
     }
 );
@@ -34,7 +33,6 @@ app.Map("/test-two", (appBuilder) =>
     {
         await context.Response.WriteAsync($"Test Two! \n");
         await next(context);
-        return;
     });
 });
 
@@ -46,15 +44,20 @@ app.UseWhen((context) =>
 {
     appBuilder.Use(async (context,next) =>
     {
-        await context.Response.WriteAsync("Test Three! \n");
+        Console.WriteLine("Hit test-three middleware! \n");
         await next(context);
+        Console.WriteLine("After ->Hit test-three middleware! \n");
     });
 });
 
+
 app.Use(async (HttpContext context, RequestDelegate next) =>
 {
-    await context.Response.WriteAsync($"Test middleware 4");
+    //await context.Response.WriteAsync($"Test middleware 4");
+    Console.WriteLine("Hit test-four middleware! \n");
     await next(context);
+    Console.WriteLine("After ->Hit test-four middleware! \n");
+
 });
 
 app.Run(async (HttpContext context) =>
