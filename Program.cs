@@ -1,10 +1,18 @@
 using asp.net_tuto_02.Classes.Users;
+using asp.net_tuto_02.Middlewares;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Register Services
+builder.Services.AddTransient<MyMiddlewareOne>();
+
+// Build
 var app = builder.Build();
 
-//app.MapGet("/", () => "Hello World!"); 
+// Middlewares
+app.UseMiddleware<MyMiddlewareOne>();
+
 
 app.MapWhen((context) =>
 {
