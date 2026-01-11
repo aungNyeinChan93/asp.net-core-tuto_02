@@ -6,12 +6,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Register Services
 builder.Services.AddTransient<MyMiddlewareOne>();
+builder.Services.AddTransient<LoggerMiddleware>();
 
 // Build
 var app = builder.Build();
 
 // Middlewares
 app.UseMiddleware<MyMiddlewareOne>();
+app.UseMiddleware<LoggerMiddleware>();
 
 
 app.MapWhen((context) =>
