@@ -32,10 +32,29 @@ app.Map("/test-two", (appBuilder) =>
 {
     appBuilder.Use(async(context,next) =>
     {
-        await context.Response.WriteAsync($"Test Two!");
+        await context.Response.WriteAsync($"Test Two! \n");
         await next(context);
         return;
     });
+});
+
+// Middlwares
+app.UseWhen((context) =>
+{
+    return context.Request.Path == "/test-three";
+}, (appBuilder) =>
+{
+    appBuilder.Use(async (context,next) =>
+    {
+        await context.Response.WriteAsync("Test Three! \n");
+        await next(context);
+    });
+});
+
+app.Use(async (HttpContext context, RequestDelegate next) =>
+{
+    await context.Response.WriteAsync($"Test middleware 4");
+    await next(context);
 });
 
 app.Run(async (HttpContext context) =>
