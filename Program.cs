@@ -4,7 +4,39 @@ using System.Text.Json;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-//app.MapGet("/", () => "Hello World!");
+//app.MapGet("/", () => "Hello World!"); 
+
+app.MapWhen((context) =>
+{
+    if (context.Request.Path == "/tests")
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    };
+},
+    (appBuilder) =>
+    {
+        appBuilder.Use(async(context,next) =>
+        {
+            await context.Response.WriteAsync("Tests \n");
+            await next(context);
+            return;
+        });
+    }
+);
+
+app.Map("/test-two", (appBuilder) =>
+{
+    appBuilder.Use(async(context,next) =>
+    {
+        await context.Response.WriteAsync($"Test Two!");
+        await next(context);
+        return;
+    });
+});
 
 app.Run(async (HttpContext context) =>
 {
