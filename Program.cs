@@ -96,26 +96,59 @@ app.Map("/test-three", (appBuilder) =>
 });
 
 
-app.UseEndpoints(endpoint =>
+//app.UseEndpoints(endpoint =>
+//{
+//    endpoint.MapGet("/customers", async (HttpContext context) =>
+//    {
+//        await context.Response.WriteAsync("Get All Customers");
+//    });
+
+
+//    endpoint.MapDelete("/customers/{id}/{category=medium}/{size?}", async (HttpContext context) =>
+//    {
+//        Console.WriteLine($"{context.Request.RouteValues["id"]}");
+//        await context.Response.WriteAsync($"Delete Customers Id- {context.Request.RouteValues["id"]} \n");
+//        await context.Response.WriteAsync($"Delete Customers - {context.Request.RouteValues["category"]} \n");
+//        await context.Response.WriteAsync($"Size - {context.Request.RouteValues["size"]}");
+//    });
+
+//    endpoint.MapGet("/customers/type/{customerType:type}", async (HttpContext context) =>
+//    {
+//        await context.Response.WriteAsync($"Customer Type : {context.Request.RouteValues["customerType"]}");
+//    });
+//});
+
+app.UseEndpoints((endPoint) =>
 {
-    endpoint.MapGet("/customers", async (HttpContext context) =>
+    endPoint.MapGet("/employees", (HttpContext context) =>
     {
-        await context.Response.WriteAsync("Get All Customers");
+        EmployeeService.GetAllEmployees(context);
     });
 
 
-    endpoint.MapDelete("/customers/{id}/{category=medium}/{size?}", async (HttpContext context) =>
+    endPoint.MapGet("/employees/{id}", (HttpContext context) =>
     {
-        Console.WriteLine($"{context.Request.RouteValues["id"]}");
-        await context.Response.WriteAsync($"Delete Customers Id- {context.Request.RouteValues["id"]} \n");
-        await context.Response.WriteAsync($"Delete Customers - {context.Request.RouteValues["category"]} \n");
-        await context.Response.WriteAsync($"Size - {context.Request.RouteValues["size"]}");
+        var isSuccess = int.TryParse(context.Request.RouteValues["id"].ToString(), out int employeeId);
+        if (!isSuccess) throw new Exception("employee id is not found");
+        EmployeeService.GetEmployee(context, employeeId);
     });
 
-    endpoint.MapGet("/customers/type/{customerType:type}", async (HttpContext context) =>
+    endPoint.MapPost("/employees", (HttpContext context) =>
     {
-        await context.Response.WriteAsync($"Customer Type : {context.Request.RouteValues["customerType"]}");
+        EmployeeService.CreateEmployee(context);
     });
+
+    endPoint.MapPut("/employees", (HttpContext context) =>
+    {
+         EmployeeService.UpdateEmployee(context);
+    });
+
+    endPoint.MapDelete("/employees/{id}", (HttpContext context) =>
+    {
+        EmployeeService.Delete(context);
+    });
+
+
 });
 
 app.Run(async (HttpContext context) =>
