@@ -1,6 +1,7 @@
 using asp.net_tuto_02.Classes.Users;
 using asp.net_tuto_02.Middlewares;
 using asp.net_tuto_02.Services;
+using asp.net_tuto_02.Utils;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,10 @@ builder.Services.AddTransient<MyMiddlewareOne>();
 builder.Services.AddTransient<LoggerMiddleware>();
 builder.Services.AddTransient<TestMiddleware>();
 builder.Services.AddTransient<CustomeExceptionHandeler>();
+builder.Services.AddRouting(option =>
+{
+    option.ConstraintMap.Add("type", typeof(CustomerConstaint));
+});
 
 // Build
 var app = builder.Build();
@@ -94,10 +99,17 @@ app.UseEndpoints(endpoint =>
     });
 
 
-    endpoint.MapDelete("/customers/{id}/{category}", async (HttpContext context) =>
+    endpoint.MapDelete("/customers/{id}/{category=medium}/{size?}", async (HttpContext context) =>
     {
         Console.WriteLine($"{context.Request.RouteValues["id"]}");
-        await context.Response.WriteAsync($"Delete Customers - {context.Request.RouteValues["category"]}");
+        await context.Response.WriteAsync($"Delete Customers Id- {context.Request.RouteValues["id"]} \n");
+        await context.Response.WriteAsync($"Delete Customers - {context.Request.RouteValues["category"]} \n");
+        await context.Response.WriteAsync($"Size - {context.Request.RouteValues["size"]}");
+    });
+
+    endpoint.MapGet("/customers/type/{customerType:type}", async (HttpContext context) =>
+    {
+        await context.Response.WriteAsync($"Customer Type : {context.Request.RouteValues["customerType"]}");
     });
 });
 
