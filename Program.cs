@@ -19,11 +19,16 @@ builder.Services.AddRouting(option =>
 // Build
 var app = builder.Build();
 
+// Static Page
+app.UseStaticFiles();
+
+
 // Middlewares
 app.UseMiddleware<CustomeExceptionHandeler>();
 app.UseMiddleware<MyMiddlewareOne>();
 app.UseMiddleware<LoggerMiddleware>();
 app.UseMiddleware<TestMiddleware>();
+
 
 app.UseRouting();
 
