@@ -1,5 +1,6 @@
 using asp.net_tuto_02.Classes.Users;
 using asp.net_tuto_02.Middlewares;
+using asp.net_tuto_02.Services;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -77,34 +78,13 @@ app.Run(async (HttpContext context) =>
         // all users GET => /users
         if(context.Request.Method == "GET")
         {
-            List<User>? users = UserRepository.GetAllUsers();
-
-            if(users is null || users.Count() == 0)
-            {
-                context.Response.StatusCode = 404;
-                await context.Response.WriteAsJsonAsync(new { message = "user not found!" });
-                return;
-            }
-
-            context.Response.StatusCode = 200;
-            await context.Response.WriteAsJsonAsync(users);
-            return;
+            UserService.GetUsers(context);
         }
 
         // create users POST => /user
         if (context.Request.Method == "POST")
         {
-            using var reader = new StreamReader(context.Request.Body);
-            var body = await reader.ReadToEndAsync();
-            User? user = JsonSerializer.Deserialize<User>(body);
-
-            if (user is null) return;
-
-            UserRepository.AddUser(user);
-
-            context.Response.StatusCode = 201;
-            await context.Response.WriteAsJsonAsync(user);
-            return;
+            UserService.CreateUser(context);
         }
     }
 });
