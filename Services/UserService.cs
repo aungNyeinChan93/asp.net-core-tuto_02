@@ -34,7 +34,32 @@ namespace asp.net_tuto_02.Services
 
             context.Response.StatusCode = 201;
             await context.Response.WriteAsJsonAsync(user);
-            return;
+        }
+
+        public async static void Update(HttpContext context)
+        {
+            using var reader = new StreamReader(context.Request.Body);
+            var body = await reader.ReadToEndAsync();
+            User? user = JsonSerializer.Deserialize<User>(body) ?? throw new Exception("User Update Fail!");
+            User? updatedUser = UserRepository.UpdateUser(user);
+
+            context.Response.StatusCode =202;
+            await context.Response.WriteAsJsonAsync(updatedUser);
+        }
+
+        public async static void GetUser(HttpContext context)
+        {
+            var isSuccess = int.TryParse(context.Request.Query["id"][0], out var id);
+            if(!isSuccess) return;
+            User? user = UserRepository.GetUser(id);
+            if(user is null)
+            {
+                //context.Response.StatusCode = 404;
+                await context.Response.WriteAsync($"User not Found");
+            };
+
+            //context.Response.StatusCode = 200;
+            await context.Response.WriteAsJsonAsync<User>(user!);
         }
     }
 }

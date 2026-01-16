@@ -20,6 +20,8 @@ app.UseMiddleware<MyMiddlewareOne>();
 app.UseMiddleware<LoggerMiddleware>();
 app.UseMiddleware<TestMiddleware>();
 
+app.UseRouting();
+
 app.MapWhen((context) =>
 {
     if (context.Request.Path == "/tests")
@@ -83,6 +85,20 @@ app.Map("/test-three", (appBuilder) =>
     });
 });
 
+
+app.UseEndpoints(endpoint =>
+{
+    endpoint.MapGet("/customers", async (HttpContext context) =>
+    {
+        await context.Response.WriteAsync("Get All Customers");
+    });
+
+    endpoint.MapPost("/customers", async (HttpContext context) =>
+    {
+        await context.Response.WriteAsync("Create Customers");
+    });
+});
+
 app.Run(async (HttpContext context) =>
 {
     if(context.Request.Path == "/users")
@@ -90,6 +106,10 @@ app.Run(async (HttpContext context) =>
         // all users GET => /users
         if(context.Request.Method == "GET")
         {
+            if (context.Request.Query.ContainsKey("id"))
+            {
+                UserService.GetUser(context);
+            };
             UserService.GetUsers(context);
         }
 
@@ -98,13 +118,23 @@ app.Run(async (HttpContext context) =>
         {
             UserService.CreateUser(context);
         }
+
+        // create users POST => /user
+        if (context.Request.Method == "PUT")
+        {
+           UserService.Update(context);
+        }
+
+       
     }
 
-    if(context.Request.Path == "/err-test")
+    if (context.Request.Path == "/err-test")
     {
         throw new Exception("Test error");
         
     }
 });
+
+
 
 app.Run();

@@ -26,8 +26,27 @@
             new User(2,"susu","susu@123","123123123"),
         };
 
-        public static List<User>? GetAllUsers() => _users.Count >0 ? _users: null ;
+        public static List<User>? GetAllUsers() => _users.Count > 0 ? _users : null;
 
-        public static void AddUser(User? user) =>  _users.Add(user!);
+        public static void AddUser(User? user) => _users.Add(user!);
+
+        public static User? UpdateUser(User? user)
+        {
+            User? findUser = _users?.FirstOrDefault(u => u.Id == user?.Id);
+
+            if (findUser is null) return null;
+
+            findUser.Name = user!.Name;
+            findUser.Email = user!.Email;
+            findUser.Password = user!.Password;
+            
+            return findUser;
+        }
+
+        public static User? GetUser(int userId)
+        {
+            User? user = _users.FirstOrDefault(u => u.Id == userId);
+            return user;
+        }
     }
 }
