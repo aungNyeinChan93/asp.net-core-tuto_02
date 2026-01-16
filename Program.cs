@@ -93,9 +93,11 @@ app.UseEndpoints(endpoint =>
         await context.Response.WriteAsync("Get All Customers");
     });
 
-    endpoint.MapPost("/customers", async (HttpContext context) =>
+
+    endpoint.MapDelete("/customers/{id}/{category}", async (HttpContext context) =>
     {
-        await context.Response.WriteAsync("Create Customers");
+        Console.WriteLine($"{context.Request.RouteValues["id"]}");
+        await context.Response.WriteAsync($"Delete Customers - {context.Request.RouteValues["category"]}");
     });
 });
 
