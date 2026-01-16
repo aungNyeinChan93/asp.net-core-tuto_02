@@ -4,9 +4,9 @@ using System.Text.Json;
 
 namespace asp.net_tuto_02.Services
 {
-    static public class UserService
+    public static class UserService
     {
-        async public static void GetUsers(HttpContext context)
+        public async static void GetUsers(HttpContext context)
         {
             List<User>? users = UserRepository.GetAllUsers();
 
@@ -22,7 +22,7 @@ namespace asp.net_tuto_02.Services
             return;
         }
 
-        async public static void CreateUser(HttpContext context)
+        public async static void CreateUser(HttpContext context)
         {
             using var reader = new StreamReader(context.Request.Body);
             var body = await reader.ReadToEndAsync();
