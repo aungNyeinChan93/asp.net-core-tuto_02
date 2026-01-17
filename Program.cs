@@ -2,6 +2,7 @@ using asp.net_tuto_02.Classes.Users;
 using asp.net_tuto_02.Middlewares;
 using asp.net_tuto_02.Services;
 using asp.net_tuto_02.Utils;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -120,13 +121,23 @@ app.Map("/test-three", (appBuilder) =>
 
 app.UseEndpoints((endPoint) =>
 {
+
+    endPoint.MapGet("/", async (HttpContext context) =>
+    {
+        //EmployeeService.GetAllEmployees(context);
+        foreach (var key in context.Request.Headers.Keys)   
+        {
+            await context.Response.WriteAsync($"{key} => {context.Request.Headers[key]} \n");
+        }
+    });
+
     endPoint.MapGet("/employees", (HttpContext context) =>
     {
         EmployeeService.GetAllEmployees(context);
     });
 
 
-    endPoint.MapGet("/employees/{id}", (HttpContext context) =>
+    endPoint.MapGet("/employees/{id:int}", (HttpContext context) =>
     {
         var isSuccess = int.TryParse(context.Request.RouteValues["id"].ToString(), out int employeeId);
         if (!isSuccess) throw new Exception("employee id is not found");
@@ -148,7 +159,12 @@ app.UseEndpoints((endPoint) =>
         EmployeeService.Delete(context);
     });
 
+    endPoint.MapGet("/test/{id:int}/{name=koko}/{size:alpha?}", async ([FromRoute]int id, [FromRoute] string? size,HttpContext context) =>
+    {
+        await context.Response.WriteAsync($"ID => {id} | Name => {context.Request.RouteValues["name"]} | Size => {size} ");
+    });
 
+    
 });
 
 app.Run(async (HttpContext context) =>
