@@ -138,6 +138,14 @@ app.UseEndpoints((endPoint) =>
         EmployeeService.GetAllEmployees(context);
     });
 
+    endPoint.MapGet("/employees/byId", ([FromQuery (Name ="id")] int[] ids) =>
+    {
+        var employees = EmployeeRepository.GetEmployees();
+        var emps = employees.Where(x => ids.Contains(x.Id)).ToList();
+
+        return emps;
+    });
+
 
     endPoint.MapGet("/employees/{id:int}", (HttpContext context) =>
     {
