@@ -1,4 +1,6 @@
-﻿namespace asp.net_tuto_02.Classes.Employees
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace asp.net_tuto_02.Classes.Employees
 {
     public class Employee
     {
@@ -50,6 +52,21 @@
 
         public static void DeleteEmployee(int id) => _employees.Remove(_employees.FirstOrDefault(e => e.Id ==id)!);
 
+    }
+
+    public class CreateEmployeeParams
+    {
+        [FromHeader]
+        public int Id { get; set; }
+
+        [FromHeader]
+        public string Name { get; set; } = null!;
+
+        [FromHeader]
+        public string Position { get; set; } = null!;
+
+        [FromHeader]
+        public int Salary { get; set; } 
     }
 
 }

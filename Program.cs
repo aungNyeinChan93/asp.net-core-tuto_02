@@ -1,3 +1,4 @@
+using asp.net_tuto_02.Classes.Employees;
 using asp.net_tuto_02.Classes.Users;
 using asp.net_tuto_02.Middlewares;
 using asp.net_tuto_02.Services;
@@ -12,6 +13,7 @@ builder.Services.AddTransient<MyMiddlewareOne>();
 builder.Services.AddTransient<LoggerMiddleware>();
 builder.Services.AddTransient<TestMiddleware>();
 builder.Services.AddTransient<CustomeExceptionHandeler>();
+
 builder.Services.AddRouting(option =>
 {
     option.ConstraintMap.Add("type", typeof(CustomerConstaint));
@@ -144,9 +146,19 @@ app.UseEndpoints((endPoint) =>
         EmployeeService.GetEmployee(context, employeeId);
     });
 
-    endPoint.MapPost("/employees", (HttpContext context) =>
+    endPoint.MapPost("/employees", ([AsParameters] CreateEmployeeParams param) =>
     {
-        EmployeeService.CreateEmployee(context);
+        var employee = new Employee();
+        employee.Id = param.Id; 
+        employee.Name = param.Name;
+        employee.Position = param.Position;
+        employee.Salary = param.Salary;
+
+        EmployeeRepository.AddEmployee(employee);
+
+        return new { employee };
+
+        //EmployeeService.CreateEmployee(context);
     });
 
     endPoint.MapPut("/employees", (HttpContext context) =>
@@ -159,9 +171,20 @@ app.UseEndpoints((endPoint) =>
         EmployeeService.Delete(context);
     });
 
-    endPoint.MapGet("/test/{id:int}/{name=koko}/{size:alpha?}", async ([FromRoute]int id, [FromRoute] string? size,HttpContext context) =>
+    endPoint.MapGet("/test/{id:int}/{name=koko}/{size:alpha?}", async ([FromRoute]int id, [FromRoute] string? size,HttpContext context, [FromQuery]string? location) =>
     {
-        await context.Response.WriteAsync($"ID => {id} | Name => {context.Request.RouteValues["name"]} | Size => {size} ");
+        await context.Response.WriteAsync($"ID => {id} | Name => {context.Request.RouteValues["name"]} | Size => {size} | Location => {location} ");
+    });
+
+    endPoint.MapGet("/admin", async (HttpContext context, [FromHeader] string? Authorization ) =>
+    {
+        var token = Authorization?.Split(" ").Last<string>();
+        await context.Response.WriteAsJsonAsync(new 
+        {
+            path = "/admin",
+            token,
+        }
+        );
     });
 
     
